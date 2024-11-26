@@ -1,0 +1,40 @@
+
+name: CI Pipeline # Name for the robot
+
+on: # When should the robot run
+
+  push:
+    branches:
+      - main      # It will run when we push code to the main branch
+      - staging   # And also to a staging branch
+
+  pull_request:
+    branches: 
+      - main  #It will also check when we send code changes to be reviewed
+
+jobs:
+  test:
+    run-on: ubuntu-latest # The robot will run on a computer with ubuntu
+
+    strategy:
+      matrix: # We want the robot to check two different versions of python
+        python-version: [3.8, 3.9]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2 # Get the latest code
+
+      - name: Set up Python
+        uses: actions/setup-python@v2 # Tell the robot to set up Python
+
+      - name: Install dependencies
+        run:  | #Install the things your project needs to run
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt # Install what's in your requrirements file
+
+      - name: Run tests
+        run: | # Run the tests to check if the code works
+          make lint # Run the linter to make sure code is neat and clean
+          make test # Run the tests to check if everything is working
+
+          
